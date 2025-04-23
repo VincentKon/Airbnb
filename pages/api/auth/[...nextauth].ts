@@ -58,6 +58,24 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        // Ensure user.id and user.email are always strings
+        token.id = user.id || ""; // default to an empty string if undefined or null
+        token.email = user.email || ""; // default to an empty string if undefined or null
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        // Ensure session.user.id and session.user.email are always strings
+        session.user.id = token.id || ""; // default to an empty string if undefined or null
+        session.user.email = token.email || ""; // default to an empty string if undefined or null
+      }
+      return session;
+    },
+  },
 };
 
 export default NextAuth(authOptions);
